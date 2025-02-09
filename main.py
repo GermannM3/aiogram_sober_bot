@@ -1,10 +1,9 @@
 import os
 import logging
-from aiogram import Bot, Dispatcher, types
-from aiogram.contrib.middlewares.logging import LoggingMiddleware
+from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message
-from aiogram.utils import executor
-import speech_recognition as sr
+from aiogram.filters import Command
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 from pydub import AudioSegment
 from vosk import Model, KaldiRecognizer
 from transformers import pipeline
@@ -17,8 +16,7 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # Инициализация бота и диспетчера
 bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher(bot)
-dp.middleware.setup(LoggingMiddleware())
+dp = Dispatcher()
 
 # Загрузка языковой модели для анализа текста
 nlp = pipeline("text-classification", model="DeepPavlov/rubert-base-cased")
@@ -45,12 +43,12 @@ def is_sober(text: str) -> bool:
     return label != "INTOXICATED" and score < 0.5
 
 # Обработчик команды /start
-@dp.message_handler(commands=["start"])
+@dp.message(Command("start"))
 async def start(message: Message):
     await message.answer("Привет! Я слежу за порядком в этом чате.")
 
 # Обработчик текстовых сообщений
-@dp.message_handler(content_types=types.ContentType.TEXT)
+@dp.message(F.text)
 async def handle_text_message(message: Message):
     text = message.text
     user_id = message.from_user.id
@@ -59,7 +57,7 @@ async def handle_text_message(message: Message):
         await message.reply(f"Пользователь @{message.from_user.username}, пожалуйста, пройдите проверку на трезвость.")
 
 # Обработчик голосовых сообщений
-@dp.message_handler(content_types=types.ContentType.VOICE)
+@dp.message(F.voice)
 async def handle_voice_message(message: Message):
     voice = message.voice
     user_id = message.from_user.id
@@ -84,4 +82,4 @@ async def handle_voice_message(message: Message):
 
 # Запуск бота
 if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    dp.run_polling(bot)
