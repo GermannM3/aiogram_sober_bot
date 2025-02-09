@@ -22,5 +22,8 @@ RUN wget https://alphacephei.com/vosk/models/vosk-model-small-ru-0.22.zip
 RUN unzip vosk-model-small-ru-0.22.zip -d model
 RUN rm vosk-model-small-ru-0.22.zip
 
+# Установка переменной окружения PYTHONHASHSEED
+ENV PYTHONHASHSEED=1
+
 # Команда для запуска бота
 CMD ["python", "main.py"]
