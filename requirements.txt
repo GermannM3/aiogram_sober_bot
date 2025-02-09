@@ -1,0 +1,6 @@
+aiogram==2.25.1
+speechrecognition==3.10.0
+pydub==0.25.1
+vosk==0.3.42
+transformers==4.30.2
+torch==2.0.1
