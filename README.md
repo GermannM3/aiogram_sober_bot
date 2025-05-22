@@ -22,7 +22,3 @@ docker build -t sober-bot .
 
 docker run -e BOT_TOKEN=YOUR_BOT_TOKEN sober-bot
 
-
-docker build -t sober-bot .
-docker run -e BOT_TOKEN=YOUR_BOT_TOKEN sober-bot
-
